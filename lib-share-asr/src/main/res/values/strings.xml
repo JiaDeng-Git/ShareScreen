@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="recognize_file">从文件中识别</string>
+    <string name="recognize_microphone">从麦克风识别</string>
+    <string name="stop_microphone">停止麦克风</string>
+    <string name="preparing">已准备好识别\n</string>
+    <string name="ready">准备\n</string>
+    <string name="failed">初始化拾音器失败 %s\n</string>
+    <string name="elapsed">Result %s elapsed %d milliseconds\n</string>
+    <string name="starting">开始\n</string>
+
+</resources>

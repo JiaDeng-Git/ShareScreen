@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.layout.QMUIRelativeLayout
+    android:id="@+id/vp_iv_1"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="35dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+
+        android:textColor="@color/qmui_config_color_50_white"
+        android:text="欢迎使用XX智屏"/>
+
+    <TextView
+        android:id="@+id/tv_result_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/qmui_config_color_50_white"
+        android:text="您可以说小屁屁唤醒我"/>
+
+
+</com.qmuiteam.qmui.layout.QMUIRelativeLayout>
+

@@ -1,0 +1,33 @@
+// 标准化构建脚本
+/**
+ * Create by 邓嘉
+ */
+
+ext {
+
+    android = [
+            applicationId    : "com.dengjia.share_screen_snapshot",
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.0",
+            minSdkVersion    : 21,
+            targetSdkVersion : 29,
+            versionCode      : 1,
+            versionName      : "1.0",
+            multiDexEnabled  : true
+    ]
+
+    depsVersion = [
+            appcompact     : "1.1.0",
+
+            arouterapi     : "1.5.0",
+            aroutercompiler: "1.2.2"
+
+    ]
+
+    depsLibs = [
+            appcompact     : "androidx.appcompat:appcompat:${depsVersion.appcompact}",
+            arouterapi     : "com.alibaba:arouter-api:${depsVersion.arouterapi}",
+            aroutercompiler: "com.alibaba:arouter-compiler:${depsVersion.aroutercompiler}"
+    ]
+
+}

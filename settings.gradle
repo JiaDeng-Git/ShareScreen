@@ -1,0 +1,11 @@
+include ':share-screen-snapshot'
+
+include ':lib-share-rtc'
+include ':lib-share-usb'
+include ':lib-share-network'
+include ':lib-share-core'
+include ':lib-share-asr'
+include ':busi-share-device-control'
+include ':lib-share-audio-player'
+include ':busi-share-envir-data'
+include ':lib-share-common-ui'

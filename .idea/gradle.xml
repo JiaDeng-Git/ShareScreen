@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="PLATFORM" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/busi-share-device-control" />
+            <option value="$PROJECT_DIR$/busi-share-envir-data" />
+            <option value="$PROJECT_DIR$/lib-share-asr" />
+            <option value="$PROJECT_DIR$/lib-share-audio-player" />
+            <option value="$PROJECT_DIR$/lib-share-common-ui" />
+            <option value="$PROJECT_DIR$/lib-share-core" />
+            <option value="$PROJECT_DIR$/lib-share-network" />
+            <option value="$PROJECT_DIR$/lib-share-rtc" />
+            <option value="$PROJECT_DIR$/lib-share-usb" />
+            <option value="$PROJECT_DIR$/share-screen-snapshot" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
