@@ -51,8 +51,6 @@ import java.util.List;
  * 3. 加载唤醒词回复资源
  * 4. 加载Skills资源
  * 5. 运行拾音器
- * 6. 得到识别结果
- * 7. 对识别结果进行处理
  *
  */
 public class ShareAsrService extends Service implements RecognitionListener {
