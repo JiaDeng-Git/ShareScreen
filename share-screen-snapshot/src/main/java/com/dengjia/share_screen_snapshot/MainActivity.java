@@ -16,7 +16,6 @@
 
 package com.dengjia.share_screen_snapshot;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
@@ -26,9 +25,11 @@ import android.Manifest;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.media.Image;
@@ -42,9 +43,11 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dengjia.lib_share_asr.ShareAsrService;
 import com.dengjia.lib_share_rtc.CallActivity;
+import com.dengjia.lib_share_usb.ShareUsb;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.QMUIViewPager;
 
@@ -80,7 +83,7 @@ public class MainActivity extends Activity implements ServiceConnection {
                 Manifest.permission.RECORD_AUDIO
         };
         if (!EasyPermissions.hasPermissions(this, perms)) {
-            EasyPermissions.requestPermissions(this, "Need permissions for camera & microphone", 0, perms);
+            EasyPermissions.requestPermissions(this, "需要麦克风及相机使用权限", 0, perms);
         }
 
         qmuiViewPager = findViewById(R.id.qvp_test1);
@@ -133,6 +136,8 @@ public class MainActivity extends Activity implements ServiceConnection {
         startService(intent);
         bindService(intent, this, BIND_AUTO_CREATE);
 
+        ShareUsb shareUsb = new ShareUsb();
+        shareUsb.run(this);
 
     }
 
@@ -147,7 +152,7 @@ public class MainActivity extends Activity implements ServiceConnection {
 
                 if (tv_result_show != null) {
                     tv_result_show.setText(result);
-                }else {
+                } else {
                     tv_result_show = findViewById(R.id.tv_result_show);
                     tv_result_show.setText(result);
                 }
