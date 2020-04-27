@@ -67,6 +67,8 @@ public class MainActivity extends Activity implements ServiceConnection {
 
     private TextView tv_result_show;
 
+    private ShareUsb shareUsb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,11 +134,11 @@ public class MainActivity extends Activity implements ServiceConnection {
 
         tv_result_show = findViewById(R.id.tv_result_show);
 
-        Intent intent = new Intent(this, ShareAsrService.class);
-        startService(intent);
-        bindService(intent, this, BIND_AUTO_CREATE);
+//        Intent intent = new Intent(this, ShareAsrService.class);
+//        startService(intent);
+//        bindService(intent, this, BIND_AUTO_CREATE);
 
-        ShareUsb shareUsb = new ShareUsb();
+        shareUsb = new ShareUsb();
         shareUsb.run(this);
 
     }
@@ -191,4 +193,9 @@ public class MainActivity extends Activity implements ServiceConnection {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        shareUsb.end();
+    }
 }
