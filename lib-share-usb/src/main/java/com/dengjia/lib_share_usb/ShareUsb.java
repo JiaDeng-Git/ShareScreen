@@ -5,14 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.hardware.usb.UsbRequest;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -43,26 +40,19 @@ public class ShareUsb {
     private HashMap<String, UsbDevice> deviceHashMap = new HashMap<>();
     private List<UsbDevice> deviceList = new ArrayList<>();
 
-    private UsbRequest usbRequest;
+    private List<ReceiveDataListener> receiveDataListenerList = new ArrayList<>();
 
     private byte[] receiveBuf;
     private byte[] sendBuf;
+    private int maxPacketSize;
 
     private Context context;
 
     class TimeBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // System.out.println(intent.getAction().toString());
             if (intent.getAction().contains(Intent.ACTION_TIME_TICK)) {
-                // Toast.makeText(context, "接收到了每分钟时间计时器的广播", Toast.LENGTH_LONG).show();
-                if (usbDeviceConnection != null) {
-                    receiveBuf = new byte[usbInEndpoint.getMaxPacketSize()];
-                    usbDeviceConnection.controlTransfer(UsbConstants.USB_DIR_IN, 10, 20, 30, receiveBuf, receiveBuf.length, 0);
-                    String data = receiveBuf.toString();
-                    System.out.println("读取数据：" + data);
-                    Toast.makeText(context, "读取数据" + data, Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(context, "接收到了每分钟时间计时器的广播", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -76,17 +66,15 @@ public class ShareUsb {
 
             if (action.contains(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 Toast.makeText(context, "USB设备插入", Toast.LENGTH_LONG).show();
-                System.out.println("设备插入");
             } else if (action.contains(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
                 Toast.makeText(context, "USB设备拔出", Toast.LENGTH_LONG).show();
-                System.out.println("设备拔出");
             } else if (action.contains(ACTION_USB_PERMISSION)) {
                 synchronized (this) {
                     if (deviceList.size() != 0) {
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             if (null != deviceList.get(0)) {
                                 Toast.makeText(context, "设备权限获取成功", Toast.LENGTH_LONG).show();
-                                initDevice();
+                                initDevices();
                             }
                         } else {
                             Toast.makeText(context, "设备权限获取失败", Toast.LENGTH_LONG).show();
@@ -102,15 +90,23 @@ public class ShareUsb {
     public void run(Context context) {
         this.context = context;
 
+        initBroadcastReceiver();
+        initDevices();
+    }
+
+    // 创建广播接收器
+    public void initBroadcastReceiver() {
+        // 申请USB设备操作权限
+        mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+
+        // 时间相关广播接收器
         timeBroadcastReceiver = new TimeBroadcastReceiver();
         timeIntentFilter = new IntentFilter();
         timeIntentFilter.addAction(Intent.ACTION_TIME_TICK);
         timeIntentFilter.addAction(Intent.ACTION_TIME_CHANGED);
         this.context.registerReceiver(timeBroadcastReceiver, timeIntentFilter);
 
-        usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
-
+        // USB相关广播接收器
         usbBroadcastReceiver = new UsbBroadcastReceiver();
         usbIntentFilter = new IntentFilter();
         usbIntentFilter.addAction(ACTION_USB_PERMISSION);
@@ -118,8 +114,111 @@ public class ShareUsb {
         usbIntentFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         usbIntentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         this.context.registerReceiver(usbBroadcastReceiver, usbIntentFilter);
+    }
 
-        getDevice();
+    private void searchDevices() {
+
+    }
+
+    // 初始化设备
+    public void initDevices() {
+        usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+
+        if (usbManager != null) {
+            deviceHashMap = usbManager.getDeviceList();
+            System.out.println("已连接设备数为：" + deviceHashMap.size());
+            Iterator<UsbDevice> deviceIterator = deviceHashMap.values().iterator();
+            if (deviceHashMap.size() != 0) {
+                while (deviceIterator.hasNext()) {
+                    UsbDevice usbDevice = deviceIterator.next();
+                    if (usbManager.hasPermission(usbDevice)) {
+                        deviceList.add(usbDevice);
+                        System.out.println("\n 设备信息：设备名字：" + usbDevice.getDeviceName() + ";  设备描述符" + usbDevice.describeContents());
+                    } else {
+                        usbManager.requestPermission(usbDevice, mPermissionIntent);
+                    }
+                }
+            }
+        }
+
+        if (deviceList.size() != 0) {
+            usbInterface = deviceList.get(0).getInterface(0);
+            System.out.println("该接口具有的端点：" + usbInterface.getEndpointCount());
+            usbOutEndpoint = usbInterface.getEndpoint(1);
+            System.out.println("端点方向：" + usbOutEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
+            usbInEndpoint = usbInterface.getEndpoint(0);
+            maxPacketSize = usbInEndpoint.getMaxPacketSize();
+            System.out.println("端点方向：" + usbInEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
+            usbDeviceConnection = usbManager.openDevice(deviceList.get(0));
+            usbDeviceConnection.claimInterface(usbInterface, true);
+        }
+    }
+
+    // 发送数据
+    public boolean sendData(String data) {
+        System.out.println("开始发送数据");
+
+        // 装配数据
+        try {
+            sendBuf = data.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        // 发送数据
+        if (usbDeviceConnection != null) {
+            if (usbDeviceConnection.bulkTransfer(usbOutEndpoint, sendBuf, sendBuf.length, 0) > 0) {
+                Log.i("ShareUsb.sendDta()", "数据发送成功");
+                return true;
+            } else {
+                Log.e("ShareUsb.sendDta()", "数据发送失败");
+                return false;
+            }
+        } else {
+            Log.e("ShareUsb.sendDta()", "未连接任何设备！");
+            return false;
+        }
+    }
+
+    // 接收数据
+    public void enableReceiveData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    synchronized (this) {
+                        if (usbDeviceConnection != null) {
+                            receiveBuf = new byte[usbInEndpoint.getMaxPacketSize()];
+                            int resultCode = usbDeviceConnection.bulkTransfer(usbInEndpoint, receiveBuf, receiveBuf.length, 0);
+                            byte[] date = null;
+                            if (resultCode > 0) {
+                                date = ByteBuffer.allocate(resultCode).array();
+                                for (int i = 0; i < resultCode; i++) {
+                                    date[i] = receiveBuf[i];
+                                }
+
+                                // 将数据传输给观察者
+                                if (receiveDataListenerList != null) {
+                                    for (ReceiveDataListener receiveDataListener : receiveDataListenerList) {
+                                        receiveDataListener.receiveData(new String(date), resultCode);
+                                    }
+
+                                }
+                            }
+                        } else {
+                            Log.e("ShareUsb.sendDta()", "未连接任何设备！");
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void addReceiveDataListener(ReceiveDataListener receiveDataListener) {
+        receiveDataListenerList.add(receiveDataListener);
+    }
+
+    public interface ReceiveDataListener {
+        void receiveData(String data, int dataLength);
     }
 
     public void end() {
@@ -133,76 +232,5 @@ public class ShareUsb {
             usbDeviceConnection.close();
         }
     }
-
-    public void getDevice() {
-        if (usbManager != null) {
-            deviceHashMap = usbManager.getDeviceList();
-            System.out.println("getDevice()已连接设备数为：" + deviceHashMap.size());
-            Iterator<UsbDevice> deviceIterator = deviceHashMap.values().iterator();
-            if (deviceHashMap.size() != 0) {
-                while (deviceIterator.hasNext()) {
-                    UsbDevice usbDevice = deviceIterator.next();
-                    if (usbManager.hasPermission(usbDevice)) {
-                        deviceList.add(usbDevice);
-                        System.out.println("getDevice()获取设备" + usbDevice.getDeviceName() + usbDevice.describeContents());
-                        initDevice();
-                    } else {
-                        usbManager.requestPermission(usbDevice, mPermissionIntent);
-                    }
-                }
-            }
-        }
-    }
-
-    public void initDevice() {
-        System.out.println("initDevice()已连接设备数为：" + deviceList.size());
-        if (deviceList.size() != 0) {
-            usbInterface = deviceList.get(0).getInterface(0);
-            System.out.println("该接口具有的端点：" + usbInterface.getEndpointCount());
-            usbOutEndpoint = usbInterface.getEndpoint(1);
-            System.out.println("端点方向：" + usbOutEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
-            usbInEndpoint = usbInterface.getEndpoint(0);
-            System.out.println("端点方向：" + usbInEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
-            usbDeviceConnection = usbManager.openDevice(deviceList.get(0));
-            usbDeviceConnection.claimInterface(usbInterface, true);
-
-            System.out.println("开始发送数据");
-            String temp = "Android send data to device!";
-            try {
-                sendBuf = temp.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if (usbDeviceConnection.bulkTransfer(usbOutEndpoint, sendBuf, sendBuf.length, 0) > 0) {
-                System.out.println("数据发送成功");
-            }
-
-            System.out.println("开始接收数据");
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    receiveBuf = new byte[usbInEndpoint.getMaxPacketSize()];
-//                    usbDeviceConnection.controlTransfer(UsbConstants.USB_DIR_IN, 10, 20, 30, receiveBuf, receiveBuf.length, 0);
-//                    System.out.println("读取数据：" + new String(receiveBuf));
-//                }
-//            }).start();
-//            int inMax = usbInEndpoint.getMaxPacketSize();
-//            receiveBuf = ByteBuffer.allocate(inMax);
-//            usbRequest = new UsbRequest();
-//            usbRequest.initialize(usbDeviceConnection, usbInEndpoint);
-//            usbRequest.queue(receiveBuf, inMax);
-//            if (usbDeviceConnection.requestWait() == usbRequest) {
-//                byte[] retData = receiveBuf.array();
-//                for (Byte byte1 : retData) {
-//                    Log.e("接收到数据：", byte1.toString());
-//                }
-//            }
-
-        }
-    }
-
-    // 1. 寻找设备
-    // 2. 打开设备
-    // 3. 数据传输
 
 }

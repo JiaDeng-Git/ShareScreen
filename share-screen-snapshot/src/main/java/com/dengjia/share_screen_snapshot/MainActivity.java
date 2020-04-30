@@ -17,39 +17,26 @@
 package com.dengjia.share_screen_snapshot;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dengjia.lib_share_asr.ShareAsrService;
 import com.dengjia.lib_share_rtc.CallActivity;
 import com.dengjia.lib_share_usb.ShareUsb;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
-import com.qmuiteam.qmui.widget.QMUIViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +63,6 @@ public class MainActivity extends Activity implements ServiceConnection {
 
         // 设置为沉浸式
         QMUIStatusBarHelper.translucent(this);
-
-        //QMUIStatusBarHelper.setStatusBarLightMode(this);
 
         // 动态申请权限
         String[] perms = {
@@ -134,12 +119,22 @@ public class MainActivity extends Activity implements ServiceConnection {
 
         tv_result_show = findViewById(R.id.tv_result_show);
 
-//        Intent intent = new Intent(this, ShareAsrService.class);
-//        startService(intent);
-//        bindService(intent, this, BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, ShareAsrService.class);
+        startService(intent);
+        bindService(intent, this, BIND_AUTO_CREATE);
 
         shareUsb = new ShareUsb();
         shareUsb.run(this);
+        shareUsb.sendData("Phone's Data");
+        // 开启接收数据
+        shareUsb.enableReceiveData();
+
+        shareUsb.addReceiveDataListener(new ShareUsb.ReceiveDataListener() {
+            @Override
+            public void receiveData(String data, int dataLength) {
+                System.out.println("收到数据：" + data);
+            }
+        });
 
     }
 
