@@ -60,27 +60,24 @@ public class ShareUsb {
     class UsbBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println(intent.getAction().toString());
+            Log.i("ShareUsb.onReceive", intent.getAction().toString());
             String action = intent.getAction();
-            System.out.println(action);
+            Log.i("ShareUsb.onReceive", action);
 
             if (action.contains(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 Toast.makeText(context, "USB设备插入", Toast.LENGTH_LONG).show();
+                searchDevices();
             } else if (action.contains(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
                 Toast.makeText(context, "USB设备拔出", Toast.LENGTH_LONG).show();
+                deviceList.clear();
+                searchDevices();
             } else if (action.contains(ACTION_USB_PERMISSION)) {
                 synchronized (this) {
-                    if (deviceList.size() != 0) {
-                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                            if (null != deviceList.get(0)) {
-                                Toast.makeText(context, "设备权限获取成功", Toast.LENGTH_LONG).show();
-                                initDevices();
-                            }
-                        } else {
-                            Toast.makeText(context, "设备权限获取失败", Toast.LENGTH_LONG).show();
-                        }
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        searchDevices();
+                        Log.i("ShareUsb", "获取设备权限成功");
                     } else {
-                        //getDevice();
+                        Toast.makeText(context, "设备权限获取失败", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -91,7 +88,8 @@ public class ShareUsb {
         this.context = context;
 
         initBroadcastReceiver();
-        initDevices();
+        searchDevices();
+        enableReceiveData();
     }
 
     // 创建广播接收器
@@ -117,11 +115,6 @@ public class ShareUsb {
     }
 
     private void searchDevices() {
-
-    }
-
-    // 初始化设备
-    public void initDevices() {
         usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
         if (usbManager != null) {
@@ -141,7 +134,15 @@ public class ShareUsb {
             }
         }
 
-        if (deviceList.size() != 0) {
+        if (deviceList.size() != 0){
+            initDevices();
+        }
+    }
+
+    // 初始化设备
+    public void initDevices() {
+        Log.i("initDevices()", "已连接设备数：" + deviceHashMap.size() + "| 已获授权设备数：" + deviceList.size());
+        if (deviceHashMap.size() != 0 && deviceList.size() != 0) {
             usbInterface = deviceList.get(0).getInterface(0);
             System.out.println("该接口具有的端点：" + usbInterface.getEndpointCount());
             usbOutEndpoint = usbInterface.getEndpoint(1);
@@ -149,6 +150,7 @@ public class ShareUsb {
             usbInEndpoint = usbInterface.getEndpoint(0);
             maxPacketSize = usbInEndpoint.getMaxPacketSize();
             System.out.println("端点方向：" + usbInEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
+
             usbDeviceConnection = usbManager.openDevice(deviceList.get(0));
             usbDeviceConnection.claimInterface(usbInterface, true);
         }
@@ -180,7 +182,7 @@ public class ShareUsb {
     }
 
     // 接收数据
-    public void enableReceiveData() {
+    private void enableReceiveData() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -204,14 +206,16 @@ public class ShareUsb {
 
                                 }
                             }
-                        } else {
-                            Log.e("ShareUsb.sendDta()", "未连接任何设备！");
                         }
+//                        else {
+//                            Log.e("ShareUsb.enableReceiveData()", "未连接任何设备！");
+//                        }
                     }
                 }
             }
         }).start();
     }
+
 
     public void addReceiveDataListener(ReceiveDataListener receiveDataListener) {
         receiveDataListenerList.add(receiveDataListener);
