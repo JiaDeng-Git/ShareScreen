@@ -26,26 +26,39 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.dengjia.lib_share_asr.ShareAsrService;
+import com.dengjia.lib_share_asr.WakeupReplyHolder;
 import com.dengjia.lib_share_rtc.CallActivity;
+import com.dengjia.lib_share_rtc.ContactListActivity;
 import com.dengjia.lib_share_usb.ShareUsb;
-import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
+import com.dengjia.lib_share_weather.MiuiWeatherView;
+import com.dengjia.lib_share_weather.WeatherBean;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends Activity implements ServiceConnection {
 
-    private ViewPager qmuiViewPager;
+    private PagerAdapter pagerAdapter;
+    private ViewPager vp_banner;
     private View view_1;
     private View view_2;
     private View view_3;
@@ -56,13 +69,16 @@ public class MainActivity extends Activity implements ServiceConnection {
 
     private ShareUsb shareUsb;
 
+    private Timer timer;
+    private TimerTask timerTask;
+
+    // 测试天气布局
+    private MiuiWeatherView weatherView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // 设置为沉浸式
-        QMUIStatusBarHelper.translucent(this);
+        setContentView(R.layout.activity_main_release);
 
         // 动态申请权限
         String[] perms = {
@@ -73,22 +89,22 @@ public class MainActivity extends Activity implements ServiceConnection {
             EasyPermissions.requestPermissions(this, "需要麦克风及相机使用权限", 0, perms);
         }
 
-        qmuiViewPager = findViewById(R.id.qvp_test1);
-
-        qmuiViewPager.arrowScroll(17);
-        qmuiViewPager.setEnabled(true);
+        // 测试ViewPager
+        vp_banner = findViewById(R.id.vp_banner);
+        vp_banner.arrowScroll(17);
+        vp_banner.setEnabled(true);
 
         view_1 = getLayoutInflater().inflate(R.layout.viewpager_chil_1, null);
-        view_1.setBackgroundResource(R.drawable.wallpaper_a);
         view_2 = getLayoutInflater().inflate(R.layout.viewpager_chil_2, null);
-        view_2.setBackgroundResource(R.drawable.wallpaper_b);
         view_3 = getLayoutInflater().inflate(R.layout.viewpager_chil_3, null);
-        view_3.setBackgroundResource(R.drawable.wallpaper_c);
 
         viewList = new ArrayList<>();
         viewList.add(view_1);
+        viewList.add(view_2);
+        viewList.add(view_3);
 
-        PagerAdapter pagerAdapter = new PagerAdapter() {
+        pagerAdapter = new PagerAdapter() {
+            private View mCurrentChildView;
 
             @Override
             public int getCount() {
@@ -113,11 +129,16 @@ public class MainActivity extends Activity implements ServiceConnection {
             public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
                 container.removeView(viewList.get(position));
             }
+
+            @Override
+            public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+                mCurrentChildView = (View) object;
+            }
         };
 
-        qmuiViewPager.setAdapter(pagerAdapter);
+        vp_banner.setAdapter(pagerAdapter);
 
-        tv_result_show = findViewById(R.id.tv_result_show);
+//        tv_result_show = findViewById(R.id.tv_result_show);
 
         Intent intent = new Intent(this, ShareAsrService.class);
         startService(intent);
@@ -126,8 +147,6 @@ public class MainActivity extends Activity implements ServiceConnection {
         shareUsb = new ShareUsb();
         shareUsb.run(this);
         shareUsb.sendData("Phone's Data");
-        // 开启接收数据
-        shareUsb.enableReceiveData();
 
         shareUsb.addReceiveDataListener(new ShareUsb.ReceiveDataListener() {
             @Override
@@ -136,6 +155,71 @@ public class MainActivity extends Activity implements ServiceConnection {
             }
         });
 
+        // 测试天气布局
+        weatherView = (MiuiWeatherView) view_2.findViewById(R.id.weather);
+        List<WeatherBean> data = new ArrayList<>();
+        //add your WeatherBean to data
+        WeatherBean b1 = new WeatherBean(WeatherBean.SUN, 20, "05:00");
+        WeatherBean b2 = new WeatherBean(WeatherBean.RAIN, 21, "05:30");
+        WeatherBean b3 = new WeatherBean(WeatherBean.SUN, 23, "06:00");
+        WeatherBean b4 = new WeatherBean(WeatherBean.RAIN, 24, "06:30");
+        WeatherBean b5 = new WeatherBean(WeatherBean.SUN, 26, "07:00");
+        WeatherBean b6 = new WeatherBean(WeatherBean.RAIN, 30, "07:30");
+        WeatherBean b7 = new WeatherBean(WeatherBean.SUN, 31, "08:00");
+        WeatherBean b8 = new WeatherBean(WeatherBean.RAIN, 31, "08:30");
+        WeatherBean b9 = new WeatherBean(WeatherBean.SUN, 31, "09:00");
+        WeatherBean b10 = new WeatherBean(WeatherBean.RAIN, 31, "09:30");
+        //b3、b4...bn
+        data.add(b1);
+        data.add(b2);
+        data.add(b3);
+        data.add(b4);
+        data.add(b5);
+        data.add(b6);
+        data.add(b7);
+        data.add(b8);
+        data.add(b9);
+        data.add(b10);
+        weatherView.setData(data);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<Integer> imageList = new ArrayList<>();
+
+        imageList.add(R.drawable.wallpaper_a);
+        imageList.add(R.drawable.wallpaper_b);
+        imageList.add(R.drawable.wallpaper_c);
+
+        timer = new Timer();
+
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == 1){
+                    findViewById(R.id.ll_index).setBackgroundResource(imageList.get((int) (Math.random() * imageList.size())));
+                }
+            }
+        };
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Message message = new Message();
+                    message.what = 1;
+                    handler.sendMessage(message);
+                }catch (Exception error){
+                    error.printStackTrace();
+                }
+            }
+        };
+
+        timer.schedule(timerTask, 8000, 10000);
     }
 
     @Override
@@ -147,31 +231,13 @@ public class MainActivity extends Activity implements ServiceConnection {
             public void onGetAsrResult(String result) {
                 Log.e("MainActivity", "\n语音识别结果：" + result);
 
-                if (tv_result_show != null) {
-                    tv_result_show.setText(result);
-                } else {
-                    tv_result_show = findViewById(R.id.tv_result_show);
-                    tv_result_show.setText(result);
-                }
+                tv_result_show = findViewById(R.id.tv_asr_result);
+                tv_result_show.setText(result);
 
                 // 启动音视频通信
                 if (result.contains("视频") && result.contains("通话")) {
-                    Intent intent = new Intent(MainActivity.this, CallActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ContactListActivity.class);
                     startActivity(intent);
-                }
-                if (result.contains("结束") && result.contains("通话")) {
-//                    ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//                    List<ActivityManager.RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1);
-//                    ActivityManager.RunningTaskInfo runningTaskInfo = runningTaskInfos.get(0);
-//                    ComponentName componentName1 = runningTaskInfo.topActivity;
-//                    Log.e("当前顶部Avtivity为：", componentName1.getClassName());
-//
-//                    try {
-//                        Class<?> callActivity = Class.forName(componentName1.getClassName());
-//                        callActivity.
-//                    } catch (ClassNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
                 }
             }
         });
@@ -192,5 +258,6 @@ public class MainActivity extends Activity implements ServiceConnection {
     protected void onDestroy() {
         super.onDestroy();
         shareUsb.end();
+        timer.cancel();
     }
 }
