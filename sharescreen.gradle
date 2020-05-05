@@ -26,8 +26,8 @@ ext {
 
     depsLibs = [
             appcompact     : "androidx.appcompat:appcompat:${depsVersion.appcompact}",
-            arouterapi     : "com.alibaba:arouter-api:${depsVersion.arouterapi}",
-            aroutercompiler: "com.alibaba:arouter-compiler:${depsVersion.aroutercompiler}"
+//            arouterapi     : "com.alibaba:arouter-api:${depsVersion.arouterapi}",
+//            aroutercompiler: "com.alibaba:arouter-compiler:${depsVersion.aroutercompiler}"
     ]
 
 }

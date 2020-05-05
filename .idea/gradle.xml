@@ -16,9 +16,11 @@
             <option value="$PROJECT_DIR$/lib-share-audio-player" />
             <option value="$PROJECT_DIR$/lib-share-common-ui" />
             <option value="$PROJECT_DIR$/lib-share-core" />
+            <option value="$PROJECT_DIR$/lib-share-location" />
             <option value="$PROJECT_DIR$/lib-share-network" />
             <option value="$PROJECT_DIR$/lib-share-rtc" />
             <option value="$PROJECT_DIR$/lib-share-usb" />
+            <option value="$PROJECT_DIR$/lib-share-weather" />
             <option value="$PROJECT_DIR$/share-screen-snapshot" />
           </set>
         </option>
