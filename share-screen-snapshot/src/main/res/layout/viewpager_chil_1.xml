@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qmuiteam.qmui.layout.QMUIRelativeLayout
-    android:id="@+id/vp_iv_1"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vp_iv"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:clickable="true"
     android:focusable="true"
-    >
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_child1_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="5.5">
+
+        <TextView
+            android:background="@color/white"
+            android:layout_width="10px"
+            android:layout_marginRight="10px"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tv_child1_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="小菲"/>
+
+    </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="35dp"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-
-        android:textColor="@color/qmui_config_color_50_white"
-        android:text="欢迎使用XX智屏"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_weight="3"
+        android:textSize="80dp"
+        android:textColor="@color/white"
+        android:text="2020更热爱生活"/>
 
     <TextView
-        android:id="@+id/tv_result_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:textColor="@color/qmui_config_color_50_white"
-        android:text="您可以说小屁屁唤醒我"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:textSize="30dp"
+        android:textColor="@color/white"
+        android:text="有阳光 有氧气 有音乐 有爱你的人 有你爱的人 有诗和远方\n\n嗨,小菲,播放音乐"/>
 
 
-</com.qmuiteam.qmui.layout.QMUIRelativeLayout>
+</LinearLayout>
 
