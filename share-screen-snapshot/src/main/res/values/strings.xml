@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Share-Screen-Snapshot</string>
+    
+    <!--  首页Banner文字资源  -->
+    <string name="banner_top_title">欢迎使用XX智屏</string>
+    <string name="banner_bottom_text">快和我对话来控制设备吧</string>
+    <string name="banner_time_month">月</string>
+    <string name="banner_time_day">日</string>
+    <string name="banner_time_hour">时</string>
+    <string name="banner_time_minute">分</string>
+    <string name="banner_time_colon"> : </string>
+
+    <!--  文字资源  -->
+
 </resources>

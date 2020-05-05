@@ -35,5 +35,6 @@ dependencies {
     implementation rootProject.depsLibs.appcompact
     api project(path: ':lib-share-core')
 
-    implementation 'com.qmuiteam:qmui:2.0.0-alpha07'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
