@@ -31,4 +31,5 @@ dependencies {
     api project(path: ':lib-share-asr')
     api project(path: ':lib-share-rtc')
     api project(path: ':lib-share-usb')
+    api project(path: ':lib-share-weather')
 }
