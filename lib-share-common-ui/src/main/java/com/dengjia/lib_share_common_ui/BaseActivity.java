@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -12,8 +11,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 设置为沉浸式
-        QMUIStatusBarHelper.translucent(this);
 
     }
 }
