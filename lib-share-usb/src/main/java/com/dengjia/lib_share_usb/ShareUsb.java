@@ -97,12 +97,12 @@ public class ShareUsb {
         // 申请USB设备操作权限
         mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
-        // 时间相关广播接收器
-        timeBroadcastReceiver = new TimeBroadcastReceiver();
-        timeIntentFilter = new IntentFilter();
-        timeIntentFilter.addAction(Intent.ACTION_TIME_TICK);
-        timeIntentFilter.addAction(Intent.ACTION_TIME_CHANGED);
-        this.context.registerReceiver(timeBroadcastReceiver, timeIntentFilter);
+//        // 时间相关广播接收器
+//        timeBroadcastReceiver = new TimeBroadcastReceiver();
+//        timeIntentFilter = new IntentFilter();
+//        timeIntentFilter.addAction(Intent.ACTION_TIME_TICK);
+//        timeIntentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+//        this.context.registerReceiver(timeBroadcastReceiver, timeIntentFilter);
 
         // USB相关广播接收器
         usbBroadcastReceiver = new UsbBroadcastReceiver();
