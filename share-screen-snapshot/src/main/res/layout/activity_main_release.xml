@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_index"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_a"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="20"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="15px">
+
+        <!-- 头部 -->
+        <LinearLayout
+            android:id="@+id/ll_index_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:orientation="horizontal">
+
+            <!-- 时间容器 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="center_vertical|left"
+                android:orientation="horizontal">
+
+                <TextClock
+                    android:id="@+id/tc_ymd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:format12Hour="yyyy-MM-dd\nEE     a"
+                    android:format24Hour="yyyy-MM-dd\nEE     a"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="13px" />
+
+                <TextClock
+                    android:id="@+id/tc_hm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:format12Hour="hh:mm"
+                    android:format24Hour="HH:mm"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="40px" />
+
+            </LinearLayout>
+
+            <!-- 功能图片按钮容器 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="center_vertical|right"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ib_avcall"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:background="@color/bcakgroud_touming"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/avcall" />
+
+                <ImageButton
+                    android:id="@+id/ib_music"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:layout_marginHorizontal="25px"
+                    android:background="@color/bcakgroud_touming"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/music" />
+
+                <ImageButton
+                    android:id="@+id/ib_vedio"
+                    android:layout_width="30px"
+                    android:layout_height="30px"
+                    android:background="@color/bcakgroud_touming"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/vedio" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 主体 -->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vp_banner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="30px"
+            android:paddingHorizontal="100px"
+            android:layout_weight="2">
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <TextView
+            android:id="@+id/tv_asr_result"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center"
+            android:text="你可以说 小菲 打开房间灯"/>
+
+    </LinearLayout>
+
+</LinearLayout>
