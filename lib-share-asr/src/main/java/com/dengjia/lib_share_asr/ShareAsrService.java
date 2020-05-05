@@ -45,13 +45,12 @@ import java.util.List;
 
 /**
  * ShareASR功能开启基本流程：
- *
+ * <p>
  * 1. 加载.so资源
  * 2. 在线程中加载models
  * 3. 加载唤醒词回复资源
  * 4. 加载Skills资源
  * 5. 运行拾音器
- *
  */
 public class ShareAsrService extends Service implements RecognitionListener {
 
