@@ -1,5 +1,8 @@
 # ShareScreen App
 
+## 运行图
+![运行图1](https://img-blog.csdnimg.cn/20200507004039423.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RqMjAxNw==,size_16,color_FFFFFF,t_70)
+![运行图2](https://img-blog.csdnimg.cn/20200507004059719.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RqMjAxNw==,size_16,color_FFFFFF,t_70)
 ## 一、概述
 公司为了在智能音箱产品系上，避免被掐脖。
 所以，集中精力，综合多种开源技术，开发智能音箱App。
