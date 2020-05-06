@@ -5,6 +5,11 @@ import com.alibaba.fastjson.JSON;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 转换类
+ *
+ * 把获得的Json数据转换为Weather类实例
+ */
 public class WeatherAdapter {
 
     private String jsonString;

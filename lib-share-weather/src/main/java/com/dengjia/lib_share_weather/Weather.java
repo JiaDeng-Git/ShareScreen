@@ -21,4 +21,8 @@ public class Weather {
         this.time = time;
     }
 
+    public static String[] getAllWeathers(){
+        return WeatherType.getAllWeather();
+    }
+
 }
