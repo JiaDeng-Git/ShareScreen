@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements ServiceConnection {
             EasyPermissions.requestPermissions(this, "需要麦克风及相机使用权限", 0, perms);
         }
 
-        // 测试ViewPager
+        // 页面主体ViewPager
         vp_banner = findViewById(R.id.vp_banner);
         vp_banner.arrowScroll(17);
         vp_banner.setEnabled(true);
