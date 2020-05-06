@@ -1,5 +1,7 @@
 package com.dengjia.lib_share_weather;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
@@ -23,8 +25,7 @@ public class WeatherAdapter {
     }
 
     private String timeFormat(String timeString){
-        char[] arrays = timeString.toCharArray();
-        return arrays[8] + arrays[9] + ":" + arrays[10] + arrays[11];
+        return timeString.substring(8, 10) + ": " +timeString.substring(10, 12);
     }
 
     public List<Weather> getWeatherData() {
