@@ -25,7 +25,7 @@
             android:id="@+id/tv_child1_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="今日天气"/>
+            android:text="今日天气(天气折线图上滑左移,下滑右移)"/>
 
     </LinearLayout>
 
