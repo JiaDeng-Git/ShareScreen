@@ -28,6 +28,5 @@ dependencies {
 
     implementation rootProject.depsLibs.appcompact
 
-
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
