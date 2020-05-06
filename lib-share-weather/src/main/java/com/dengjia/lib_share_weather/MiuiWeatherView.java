@@ -28,6 +28,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.dengjia.lib_share_weather.WeatherType.BIGRUSH_TO_HUGERUSH;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_RUSH_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_SAND_STORM;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_TO_HUGE_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.BIG_TO_RUSH_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.BLOWING_SAND;
+import static com.dengjia.lib_share_weather.WeatherType.CLOUDY;
+import static com.dengjia.lib_share_weather.WeatherType.FLY_ASH;
+import static com.dengjia.lib_share_weather.WeatherType.FOG;
+import static com.dengjia.lib_share_weather.WeatherType.HAZE;
+import static com.dengjia.lib_share_weather.WeatherType.HUGE_RUSH_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.ICE_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.MIDDLE_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.MIDDLE_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.MIDDLE_TO_BIG_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.MIDDLE_TO_BIG_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.NON_ERROR;
+import static com.dengjia.lib_share_weather.WeatherType.RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.RAIN_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.RUSH_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.RUSH_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.RUSH_TO_BIGRUSH_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.SAND_STORM;
+import static com.dengjia.lib_share_weather.WeatherType.SHOWER;
+import static com.dengjia.lib_share_weather.WeatherType.SMALL_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.SMALL_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.SMALL_TO_MIDDLE_SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.SMALL_TO_MIDLE_RAIN;
+import static com.dengjia.lib_share_weather.WeatherType.SNOW;
+import static com.dengjia.lib_share_weather.WeatherType.SNOW_SHOWER;
+import static com.dengjia.lib_share_weather.WeatherType.SUN;
+import static com.dengjia.lib_share_weather.WeatherType.SUN_CLOUD;
+import static com.dengjia.lib_share_weather.WeatherType.THUNDER_SHOWER;
+import static com.dengjia.lib_share_weather.WeatherType.THUNDER_SHOWER_WITH_HAIL;
+
 /**
  * Created by ccy on 2017-07-28.
  */
@@ -55,7 +92,7 @@ public class MiuiWeatherView extends View {
     private Paint textPaint; //文字画笔
     private Paint circlePaint; //圆点画笔
 
-    private List<WeatherBean> data = new ArrayList<>(); //元数据
+    private List<Weather> data = new ArrayList<>(); //元数据
     private List<Pair<Integer, String>> weatherDatas = new ArrayList<>();  //对元数据中天气分组后的集合
     private List<Float> dashDatas = new ArrayList<>(); //不同天气之间虚线的x坐标集合
     private List<PointF> points = new ArrayList<>(); //折线拐点的集合
@@ -117,7 +154,7 @@ public class MiuiWeatherView extends View {
     private void calculatePontGap() {
         int lastMaxTem = -Integer.MAX_VALUE;
         int lastMinTem = Integer.MAX_VALUE;
-        for (WeatherBean bean : data) {
+        for (Weather bean : data) {
             if (bean.temperature > lastMaxTem) {
                 maxTemperature = bean.temperature;
                 lastMaxTem = bean.temperature;
@@ -157,7 +194,7 @@ public class MiuiWeatherView extends View {
      *
      * @param data
      */
-    public void setData(List<WeatherBean> data) {
+    public void setData(List<Weather> data) {
         if (data == null) {
             return;
         }
@@ -165,7 +202,7 @@ public class MiuiWeatherView extends View {
         notifyDataSetChanged();
     }
 
-    public List<WeatherBean> getData(){
+    public List<Weather> getData(){
         return data;
     }
 
@@ -190,7 +227,7 @@ public class MiuiWeatherView extends View {
      */
     private void initIcons() {
         icons.clear();
-        String[] weathers = WeatherBean.getAllWeathers();
+        String[] weathers = Weather.getAllWeathers();
         for (int i = 0; i < weathers.length; i++) {
             Bitmap bmp = getWeatherIcon(weathers[i], iconWidth, iconWidth);
             icons.put(weathers[i], bmp);
@@ -206,7 +243,7 @@ public class MiuiWeatherView extends View {
         String lastWeather = "";
         int count = 0;
         for (int i = 0; i < data.size(); i++) {
-            WeatherBean bean = data.get(i);
+            Weather bean = data.get(i);
             if (i == 0) {
                 lastWeather = bean.weather;
             }
@@ -544,24 +581,116 @@ public class MiuiWeatherView extends View {
     private int getIconResId(String weather) {
         int resId;
         switch (weather) {
-            case WeatherBean.SUN:
+            case SUN:
                 resId = R.drawable.sun;
                 break;
-            case WeatherBean.CLOUDY:
-                resId = R.drawable.cloudy;
-                break;
-            case WeatherBean.RAIN:
-                resId = R.drawable.rain;
-                break;
-            case WeatherBean.SNOW:
-                resId = R.drawable.snow;
-                break;
-            case WeatherBean.SUN_CLOUD:
+            case SUN_CLOUD:
                 resId = R.drawable.sun_cloud;
                 break;
-            case WeatherBean.THUNDER:
+            case CLOUDY:
+                resId = R.drawable.cloudy;
+                break;
+            case SHOWER:
+                resId = R.drawable.shower;
+                break;
+            case THUNDER_SHOWER:
+                resId = R.drawable.thunder_shower;
+                break;
+            case THUNDER_SHOWER_WITH_HAIL:
+                resId = R.drawable.thunder_shower_with_hail;
+                break;
+            case RAIN_SNOW:
+                resId = R.drawable.rain_snow;
+                break;
+            case SMALL_RAIN:
+                resId = R.drawable.small_rain;
+                break;
+            case MIDDLE_RAIN:
+                resId = R.drawable.middle_rain;
+                break;
+            case BIG_RAIN:
+                resId = R.drawable.big_rain;
+                break;
+            case RUSH_RAIN:
+                resId = R.drawable.rush_rain;
+                break;
+            case BIG_RUSH_RAIN:
+                resId = R.drawable.big_rush_rain;
+                break;
+            case HUGE_RUSH_RAIN:
+                resId = R.drawable.huge_rush_rain;
+                break;
+            case SNOW_SHOWER:
+                resId = R.drawable.snow_shower;
+                break;
+            case SMALL_SNOW:
+                resId = R.drawable.small_snow;
+                break;
+            case MIDDLE_SNOW:
+                resId = R.drawable.middle_snow;
+                break;
+            case BIG_SNOW:
+                resId = R.drawable.big_snow;
+                break;
+            case RUSH_SNOW:
+                resId = R.drawable.rush_snow;
+                break;
+            case FOG:
+                resId = R.drawable.fog;
+                break;
+            case ICE_RAIN:
+                resId = R.drawable.ice_rain;
+                break;
+            case SAND_STORM:
+                resId = R.drawable.sand_storm;
+                break;
+            case SMALL_TO_MIDLE_RAIN:
+                resId = R.drawable.small_to_middle_rain;
+                break;
+            case MIDDLE_TO_BIG_RAIN:
+                resId = R.drawable.middle_to_big_rain;
+                break;
+            case BIG_TO_RUSH_RAIN:
+                resId = R.drawable.big_to_rush_rain;
+                break;
+            case RUSH_TO_BIGRUSH_RAIN:
+                resId = R.drawable.rush_to_bigrush_rain;
+                break;
+            case BIGRUSH_TO_HUGERUSH:
+                resId = R.drawable.bigrush_to_hugerush;
+                break;
+            case SMALL_TO_MIDDLE_SNOW:
+                resId = R.drawable.small_to_middle_snow;
+                break;
+            case MIDDLE_TO_BIG_SNOW:
+                resId = R.drawable.middle_to_big_snow;
+                break;
+            case BIG_TO_HUGE_SNOW:
+                resId = R.drawable.big_to_huge_snow;
+                break;
+            case FLY_ASH:
+                resId = R.drawable.fly_ash;
+                break;
+            case BLOWING_SAND:
+                resId = R.drawable.blowing_sand;
+                break;
+            case BIG_SAND_STORM:
+                resId = R.drawable.big_sand_storm;
+                break;
+            case HAZE:
+                resId = R.drawable.haze;
+                break;
+            case NON_ERROR:
+                resId = R.drawable.non_error;
+                break;
+            case RAIN:
+                resId = R.drawable.rain;
+                break;
+            case SNOW:
+                resId = R.drawable.snow;
+                break;
             default:
-                resId = R.drawable.thunder;
+                resId = R.drawable.non_error;
                 break;
         }
         return resId;
