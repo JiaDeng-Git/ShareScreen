@@ -45,7 +45,8 @@ import com.dengjia.lib_share_rtc.CallActivity;
 import com.dengjia.lib_share_rtc.ContactListActivity;
 import com.dengjia.lib_share_usb.ShareUsb;
 import com.dengjia.lib_share_weather.MiuiWeatherView;
-import com.dengjia.lib_share_weather.WeatherBean;
+import com.dengjia.lib_share_weather.Weather;
+import com.dengjia.lib_share_weather.WeatherManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class MainActivity extends Activity implements ServiceConnection {
 
     // 测试天气布局
     private MiuiWeatherView weatherView;
+    private WeatherManager weatherManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,12 +140,6 @@ public class MainActivity extends Activity implements ServiceConnection {
 
         vp_banner.setAdapter(pagerAdapter);
 
-//        tv_result_show = findViewById(R.id.tv_result_show);
-
-        Intent intent = new Intent(this, ShareAsrService.class);
-        startService(intent);
-        bindService(intent, this, BIND_AUTO_CREATE);
-
         shareUsb = new ShareUsb();
         shareUsb.run(this);
         shareUsb.sendData("Phone's Data");
@@ -155,32 +151,22 @@ public class MainActivity extends Activity implements ServiceConnection {
             }
         });
 
-        // 测试天气布局
-        weatherView = (MiuiWeatherView) view_2.findViewById(R.id.weather);
-        List<WeatherBean> data = new ArrayList<>();
-        //add your WeatherBean to data
-        WeatherBean b1 = new WeatherBean(WeatherBean.SUN, 20, "05:00");
-        WeatherBean b2 = new WeatherBean(WeatherBean.RAIN, 21, "05:30");
-        WeatherBean b3 = new WeatherBean(WeatherBean.SUN, 23, "06:00");
-        WeatherBean b4 = new WeatherBean(WeatherBean.RAIN, 24, "06:30");
-        WeatherBean b5 = new WeatherBean(WeatherBean.SUN, 26, "07:00");
-        WeatherBean b6 = new WeatherBean(WeatherBean.RAIN, 30, "07:30");
-        WeatherBean b7 = new WeatherBean(WeatherBean.SUN, 31, "08:00");
-        WeatherBean b8 = new WeatherBean(WeatherBean.RAIN, 31, "08:30");
-        WeatherBean b9 = new WeatherBean(WeatherBean.SUN, 31, "09:00");
-        WeatherBean b10 = new WeatherBean(WeatherBean.RAIN, 31, "09:30");
-        //b3、b4...bn
-        data.add(b1);
-        data.add(b2);
-        data.add(b3);
-        data.add(b4);
-        data.add(b5);
-        data.add(b6);
-        data.add(b7);
-        data.add(b8);
-        data.add(b9);
-        data.add(b10);
-        weatherView.setData(data);
+        // 天气布局
+        weatherView = view_2.findViewById(R.id.weather);
+        weatherManager = new WeatherManager(this, false);
+        WeatherManager.WeatherDataListener weatherDataListener = new WeatherManager.WeatherDataListener() {
+            @Override
+            public void onWeatherDataReceived(List<Weather> weathers) {
+                weatherView.setData(weathers);
+            }
+        };
+        weatherManager.addWeatherDataListener(weatherDataListener);
+
+//        try {
+//            weatherView.setData(weatherManager.getWeatherData());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -220,6 +206,10 @@ public class MainActivity extends Activity implements ServiceConnection {
         };
 
         timer.schedule(timerTask, 8000, 10000);
+
+        Intent intent = new Intent(this, ShareAsrService.class);
+        startService(intent);
+        bindService(intent, this, BIND_AUTO_CREATE);
     }
 
     @Override
