@@ -152,7 +152,33 @@ public class ShareUsb {
             System.out.println("端点方向：" + usbInEndpoint.getDirection() + "; 端点类型：" + usbOutEndpoint.getType());
 
             usbDeviceConnection = usbManager.openDevice(deviceList.get(0));
+            configUsb(115200);
             usbDeviceConnection.claimInterface(usbInterface, true);
+        }
+    }
+
+    // 设置波特率
+    private boolean configUsb(int paramInt) {
+        byte[] arrayOfByte = new byte[8];
+        usbDeviceConnection.controlTransfer(192, 95, 0, 0, arrayOfByte, 8, 1000);
+        usbDeviceConnection.controlTransfer(64, 161, 0, 0, null, 0, 1000);
+        long l1 = 1532620800 / paramInt;
+        for (int i = 3; ; i--) {
+            if ((l1 <= 65520L) || (i <= 0)) {
+                long l2 = 65536L - l1;
+                int j = (short) (int) (0xFF00 & l2 | i);
+                int k = (short) (int) (0xFF & l2);
+                usbDeviceConnection.controlTransfer(64, 154, 4882, j, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(64, 154, 3884, k, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(192, 149, 9496, 0, arrayOfByte, 8, 1000);
+                usbDeviceConnection.controlTransfer(64, 154, 1304, 80, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(64, 161, 20511, 55562, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(64, 154, 4882, j, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(64, 154, 3884, k, null, 0, 1000);
+                usbDeviceConnection.controlTransfer(64, 164, 0, 0, null, 0, 1000);
+                return true;
+            }
+            l1 >>= 3;
         }
     }
 
