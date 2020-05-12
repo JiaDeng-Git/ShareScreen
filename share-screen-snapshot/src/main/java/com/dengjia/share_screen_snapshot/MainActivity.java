@@ -26,21 +26,19 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.dengjia.lib_share_asr.ShareAsrService;
-import com.dengjia.lib_share_asr.WakeupReplyHolder;
+
 import com.dengjia.lib_share_rtc.CallActivity;
 import com.dengjia.lib_share_rtc.ContactListActivity;
 import com.dengjia.lib_share_usb.ShareUsb;
@@ -48,7 +46,6 @@ import com.dengjia.lib_share_weather.MiuiWeatherView;
 import com.dengjia.lib_share_weather.Weather;
 import com.dengjia.lib_share_weather.WeatherManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -134,6 +131,7 @@ public class MainActivity extends Activity implements ServiceConnection {
 
             @Override
             public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+                Log.e("setPrimaryItem()", "当前View的position为: "+ position);
                 mCurrentChildView = (View) object;
             }
         };
@@ -221,12 +219,19 @@ public class MainActivity extends Activity implements ServiceConnection {
             public void onGetAsrResult(String result) {
                 Log.e("MainActivity", "\n语音识别结果：" + result);
 
+                if ( result.contains("打开") && result.contains("房间") && result.contains("灯")){
+                    shareUsb.sendData("open");
+                }
+                if ( result.contains("关闭") && result.contains("房间") && result.contains("灯")){
+                    shareUsb.sendData("close");
+                }
+
                 tv_result_show = findViewById(R.id.tv_asr_result);
                 tv_result_show.setText(result);
 
                 // 启动音视频通信
                 if (result.contains("视频") && result.contains("通话")) {
-                    Intent intent = new Intent(MainActivity.this, ContactListActivity.class);
+                    Intent intent = new Intent(MainActivity.this, CallActivity.class);
                     startActivity(intent);
                 }
             }
