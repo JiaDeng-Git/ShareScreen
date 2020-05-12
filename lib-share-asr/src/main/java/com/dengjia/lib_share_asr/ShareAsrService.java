@@ -98,21 +98,25 @@ public class ShareAsrService extends Service implements RecognitionListener {
                 // 这里是拿到识别结果后的处理逻辑
                 if (result != null) {
                     if (result.contains(Wakeup.WAKEUP.getWakeUpWord())) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), WakeupReplyHolder.getInstance().getReplyHash().get((int) (Math.random() * WakeupReplyHolder.getInstance().getReplyHash().size() + 1)));
-                                if (mediaPlayer != null) {
-                                    mediaPlayer.start();
-                                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                        @Override
-                                        public void onCompletion(MediaPlayer mediaPlayer) {
-                                            mediaPlayer.release();
-                                        }
-                                    });
+                        synchronized (this){
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), WakeupReplyHolder.getInstance().getReplyHash().get((int) (Math.random() * WakeupReplyHolder.getInstance().getReplyHash().size() + 1)));
+                                    if (mediaPlayer != null) {
+                                        mediaPlayer.start();
+                                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                                mediaPlayer.release();
+                                            }
+                                        });
+                                    }
+
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        }
 
                         Log.e(TAG, "查看唤醒词识别Flag：true \n");
                         // Log.e(TAG, "识别结果\n" + simpleDateFormat.format(date) + "\n onResult：\n" + hypothesis);
