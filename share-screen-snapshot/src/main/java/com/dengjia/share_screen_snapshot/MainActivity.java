@@ -168,6 +168,7 @@ public class MainActivity extends Activity implements ServiceConnection {
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
