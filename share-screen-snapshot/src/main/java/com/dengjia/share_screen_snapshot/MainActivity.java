@@ -67,9 +67,6 @@ public class MainActivity extends Activity implements ServiceConnection {
 
     private ShareUsb shareUsb;
 
-    private Timer timer;
-    private TimerTask timerTask;
-
     // 测试天气布局
     private MiuiWeatherView weatherView;
     private WeatherManager weatherManager;
@@ -160,12 +157,6 @@ public class MainActivity extends Activity implements ServiceConnection {
         };
         weatherManager.addWeatherDataListener(weatherDataListener);
 
-//        try {
-//            weatherView.setData(weatherManager.getWeatherData());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
     }
 
 
@@ -178,33 +169,6 @@ public class MainActivity extends Activity implements ServiceConnection {
         imageList.add(R.drawable.wallpaper_a);
         imageList.add(R.drawable.wallpaper_b);
         imageList.add(R.drawable.wallpaper_c);
-
-        timer = new Timer();
-
-        Handler handler = new Handler(){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                if (msg.what == 1){
-                    findViewById(R.id.ll_index).setBackgroundResource(imageList.get((int) (Math.random() * imageList.size())));
-                }
-            }
-        };
-
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    Message message = new Message();
-                    message.what = 1;
-                    handler.sendMessage(message);
-                }catch (Exception error){
-                    error.printStackTrace();
-                }
-            }
-        };
-
-        timer.schedule(timerTask, 8000, 10000);
 
         Intent intent = new Intent(this, ShareAsrService.class);
         startService(intent);
@@ -220,10 +184,10 @@ public class MainActivity extends Activity implements ServiceConnection {
             public void onGetAsrResult(String result) {
                 Log.e("MainActivity", "\n语音识别结果：" + result);
 
-                if ( result.contains("打开") && result.contains("房间") && result.contains("灯")){
+                if ( result.contains("打开") && result.contains("房间") && result.contains("台灯")){
                     shareUsb.sendData("open");
                 }
-                if ( result.contains("关闭") && result.contains("房间") && result.contains("灯")){
+                if ( result.contains("关闭") && result.contains("房间") && result.contains("台灯")){
                     shareUsb.sendData("close");
                 }
 
@@ -254,6 +218,5 @@ public class MainActivity extends Activity implements ServiceConnection {
     protected void onDestroy() {
         super.onDestroy();
         shareUsb.end();
-        timer.cancel();
     }
 }
