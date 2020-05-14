@@ -13,6 +13,7 @@ public class DeviceEntity extends BaseEntity {
         devices.add("风扇");
         devices.add("加湿器");
         devices.add("灯带");
+        devices.add("台灯");
         devices.add("空调");
     }
 
