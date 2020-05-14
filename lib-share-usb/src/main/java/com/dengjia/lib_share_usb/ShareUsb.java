@@ -89,7 +89,7 @@ public class ShareUsb {
 
         initBroadcastReceiver();
         searchDevices();
-        enableReceiveData();
+        // enableReceiveData();
     }
 
     // 创建广播接收器
